@@ -5,82 +5,43 @@ import java.util.Scanner;
 public class App {
 
     public static void main(String[] args) {
-        while (true) {
-            System.out.format("1. 注册\n" + "2. 登录\n" + "3. 退出\n" + "请输入你的选择(1~3)：");
+        boolean isLoop = true;
+
+        while (isLoop) {
+            MainInterface mainInterface = new MainInterface();
+            mainInterface.show();
+
             Scanner scanner = new Scanner(System.in);
-            int input = scanner.nextInt();
-
-            if (input == 1) {
-                Prompt prompt = new Register();
-                prompt.inputInformation();
-                while (true) {
-                    String inputInformation = scanner.next();
-                    String[] registerInformatics = inputInformation.split(",");
-
-                    String checkFormat = CheckUtil.checkFormat(input, registerInformatics);
-                    if (!checkFormat.equals("")) {
-                        prompt.errorInformation(checkFormat);
-                        continue;
-                    }
-
-                    User inputUser = new User(registerInformatics[0], registerInformatics[1], registerInformatics[2], registerInformatics[3]);
-                    String checkResult = CheckUtil.checkFormation(inputUser);
-                    UserRepository userRepository = new UserRepository();
-                    if (checkResult.equals("")) {
-                        if (userRepository.save(inputUser)) {
-                            prompt.rightInformation(inputUser);
-                        }
-                    } else {
-                        prompt.parameterError(checkResult);
-                        continue;
-                    }
-                    userRepository.closeConnection();
+            String i = scanner.next();
+            switch (i) {
+                case "1":
+                    Register register = new Register();
+                    register.show();
                     break;
-                }
-                continue;
-            }
-            if (input == 2) {
-                Login prompt = new Login();
-                prompt.inputInformation();
-                int inputCount = 0;
-
-                while (true) {
-                    String inputInformation = scanner.next();
-                    String[] loginInformations = inputInformation.split(",");
-
-                    UserRepository userRepository = new UserRepository();
-                    if (userRepository.queryLockStatementByname(loginInformations[0])) {
-                        prompt.locked();
-                        continue;
-                    }
-
-                    inputCount++;
-
-                    String checkFormat = CheckUtil.checkFormat(input, loginInformations);
-                    if (!checkFormat.equals("")) {
-                        prompt.errorInformation(checkFormat);
-                        continue;
-                    }
-
-
-                    User user = userRepository.queryByname(loginInformations[0]);
-                    String checkResult = CheckUtil.isLoginRight(loginInformations[0], loginInformations[1], user);
-                    if (checkResult.equals("")) {
-                        prompt.rightInformation(user);
-                    } else {
-                        if (inputCount >= 3) {
-                            userRepository.update(loginInformations[0], 1);
-                            prompt.locked();
-                            continue;
-                        }
-                        prompt.parameterError(checkResult);
-                        continue;
-                    }
-                    userRepository.closeConnection();
+                case "2":
+                    Login login = new Login();
+                    login.show();
                     break;
-                }
+                case "3":
+                    System.out.println("已退出");
+                    isLoop = false;
+                    break;
+                default:
+                    System.out.println("输入错误，请重新输入");
+                    break;
             }
         }
     }
 
 }
+
+//huxiao,18890061083,182930@qq.com,18293013847xiao
+//aaa,18890061083,804156017@qq.com,19930706xiao
+//bbb,18890061083,804156017@qq.com,19930706xiao
+//ccc,18890061083,804156017@qq.com,19930706xiao
+//ddd,18890061083,804156017@qq.com,19930706xiao
+//eee,18890061083,804156017@qq.com,19930706xiao
+
+//aaa,199306xiao
+//bbb,19930706xiao
+//eee,19930706xiao
