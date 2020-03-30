@@ -1,6 +1,9 @@
 package com.thoughtworks;
 
 public class CheckUtil {
+    private CheckUtil() {
+    }
+
     public static boolean isRightUsername(String name) {
         if (name == null) {
             return false;

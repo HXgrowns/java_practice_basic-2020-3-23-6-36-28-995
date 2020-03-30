@@ -3,13 +3,13 @@ package com.thoughtworks;
 import java.util.Scanner;
 
 public class App {
+    private static final String MAIN_SURFACE = "1. 注册\n2. 登录\n3. 退出\n请输入你的选择(1~3)：";
 
     public static void main(String[] args) {
         boolean isLoop = true;
 
         while (isLoop) {
-            MainInterface mainInterface = new MainInterface();
-            mainInterface.show();
+            System.out.println(MAIN_SURFACE);
 
             Scanner scanner = new Scanner(System.in);
             String i = scanner.next();
@@ -34,14 +34,3 @@ public class App {
     }
 
 }
-
-//huxiao,18890061083,182930@qq.com,18293013847xiao
-//aaa,18890061083,804156017@qq.com,19930706xiao
-//bbb,18890061083,804156017@qq.com,19930706xiao
-//ccc,18890061083,804156017@qq.com,19930706xiao
-//ddd,18890061083,804156017@qq.com,19930706xiao
-//eee,18890061083,804156017@qq.com,19930706xiao
-
-//aaa,199306xiao
-//bbb,19930706xiao
-//eee,19930706xiao

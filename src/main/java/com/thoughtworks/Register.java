@@ -3,36 +3,48 @@ package com.thoughtworks;
 import java.util.Scanner;
 
 public class Register {
+    private final String INPUT_INFOMATION = "请输入注册信息(格式：用户名，手机号，邮箱，密码)";
+    private final String FORMAT_ERROR = "格式错误\n请按正确格式输入注册信息：";
+    private final String USER_ERROR = "用户名不合法\n请输入合法的注册信息：";
+    private final String PHONE_ERROR = "手机号不合法\n请输入合法的注册信息：";
+    private final String EMAIL_ERROR = "邮箱不合法\n请输入合法的注册信息：";
+    private final String PASSWORD_ERROR = "密码不合法\n请输入合法的注册信息：";
 
     public void show() {
-        inputInformation();
+        while (true) {
+            inputInformation();
 
-        Scanner scanner = new Scanner(System.in);
-        String[] registerInfos = scanner.next().trim().split(",");
-        if (!checkFormat(registerInfos)) {
-            errorInformation();
-            show();
-        }
+            Scanner scanner = new Scanner(System.in);
+            String[] registerInfos = scanner.next().trim().split(",");
+            if (!checkFormat(registerInfos)) {
+                printErrorInformation();
+                continue;
+            }
 
-        if (!checkParameter(registerInfos)) {
-            show();
-        }
+            User user = checkParameter(registerInfos);
+            if (user == null) {
+                continue;
+            }
 
-        UserRepository userRepository = new UserRepository();
-        boolean isSaveSuccess = userRepository.save(new User(registerInfos[0], registerInfos[1], registerInfos[2], registerInfos[3]));
-        if (!isSaveSuccess) {
-            return;
+            UserRepository userRepository = new UserRepository();
+            boolean isSaveSuccess = userRepository.save(user);
+
+            if (!isSaveSuccess) {
+                continue;
+            }
+
+            userRepository.closeConnection();
+            rightInformation(registerInfos[0]);
+            break;
         }
-        userRepository.closeConnection();
-        rightInformation(registerInfos[0]);
     }
 
     private void inputInformation() {
-        System.out.println("请输入注册信息(格式：用户名，手机号，邮箱，密码)");
+        System.out.println(INPUT_INFOMATION);
     }
 
-    private void errorInformation() {
-        System.out.println("格式错误\n请按正确格式输入注册信息：");
+    private void printErrorInformation() {
+        System.out.println(FORMAT_ERROR);
     }
 
     private void rightInformation(String name) {
@@ -43,24 +55,24 @@ public class Register {
         return registerInfos != null && registerInfos.length == 4;
     }
 
-    private boolean checkParameter(String[] registerInfos) {
+    private User checkParameter(String[] registerInfos) {
         if (!CheckUtil.isRightUsername(registerInfos[0])) {
-            System.out.println("用户名不合法\n请输入合法的注册信息：");
-            return false;
+            System.out.println(USER_ERROR);
+            return null;
         }
         if (!CheckUtil.isRightPhone(registerInfos[1])) {
-            System.out.println("手机号不合法\n请输入合法的注册信息：");
-            return false;
+            System.out.println(PHONE_ERROR);
+            return null;
         }
         if (!CheckUtil.isRightEmail(registerInfos[2])) {
-            System.out.println("邮箱不合法\n请输入合法的注册信息：");
-            return false;
+            System.out.println(EMAIL_ERROR);
+            return null;
         }
         if (!CheckUtil.isRightPassword(registerInfos[3])) {
-            System.out.println("密码不合法\n请输入合法的注册信息：");
-            return false;
+            System.out.println(PASSWORD_ERROR);
+            return null;
         }
-        return true;
+        return new User(registerInfos[0], registerInfos[1], registerInfos[2], registerInfos[3]);
     }
 
 

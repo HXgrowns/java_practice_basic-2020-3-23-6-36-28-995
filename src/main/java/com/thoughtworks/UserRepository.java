@@ -13,12 +13,12 @@ public class UserRepository {
     }
 
     public boolean save(User user) {
-        User queriedUser = queryByname(user.getName());
+        User queriedUser = queryByName(user.getName());
         if (queriedUser != null) {
             System.out.println("该用户已存在");
             return false;
         }
-        String insert = "INSERT INTO user (name, phone, email, password) VALUES (?, ?, ?, ?)";
+        String insert = "INSERT INTO user (name, phone, email, password) VALUES (?, ?, ?, MD5(?))";
         try (PreparedStatement preparedStatement = this.connection.prepareStatement(insert)) {
             preparedStatement.setString(1, user.getName());
             preparedStatement.setString(2, user.getPhoneNumber());
@@ -32,24 +32,8 @@ public class UserRepository {
         return false;
     }
 
-    public void updateLockStatement(String name, int lockStatement) {
-        User queriedUser = queryByname(name);
-        if (queriedUser == null) {
-            System.out.println("该用户不存在");
-        }
-
-        String update = "UPDATE user SET lock_statement = ? WHERE name = ?";
-        try (PreparedStatement preparedStatement = this.connection.prepareStatement(update)) {
-            preparedStatement.setInt(1, lockStatement);
-            preparedStatement.setString(2, name);
-            preparedStatement.execute();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
     public void updateCount(String name, int count) {
-        User queriedUser = queryByname(name);
+        User queriedUser = queryByName(name);
         if (queriedUser == null) {
             System.out.println("该用户不存在");
         }
@@ -64,7 +48,7 @@ public class UserRepository {
         }
     }
 
-    public User queryByname(String userName) {
+    public User queryByName(String userName) {
         String query = "SELECT * FROM user WHERE name = ?";
         try (PreparedStatement preparedStatement = this.connection.prepareStatement(query)) {
             preparedStatement.setString(1, userName);
@@ -78,35 +62,7 @@ public class UserRepository {
         return null;
     }
 
-    public int queryLockStatementByname(String userName) {
-        String queryLockStatement = "SELECT lock_statement FROM user WHERE name = ?";
-        try (PreparedStatement preparedStatement = this.connection.prepareStatement(queryLockStatement)) {
-            preparedStatement.setString(1, userName);
-            ResultSet resultSet = preparedStatement.executeQuery();
-            if (resultSet.next()) {
-                return resultSet.getInt("lock_statement");
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return 0;
-    }
-
-    public String queryPasswordByname(String userName) {
-        String queryLockStatement = "SELECT password FROM user WHERE name = ?";
-        try (PreparedStatement preparedStatement = this.connection.prepareStatement(queryLockStatement)) {
-            preparedStatement.setString(1, userName);
-            ResultSet resultSet = preparedStatement.executeQuery();
-            if (resultSet.next()) {
-                return resultSet.getString("password");
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    public int queryCountByname(String userName) {
+    public int queryCountByName(String userName) {
         String queryLockStatement = "SELECT count FROM user WHERE name = ?";
         try (PreparedStatement preparedStatement = this.connection.prepareStatement(queryLockStatement)) {
             preparedStatement.setString(1, userName);
@@ -118,6 +74,25 @@ public class UserRepository {
             e.printStackTrace();
         }
         return 0;
+    }
+
+    public User loginByPasswordAndName(String name, String password) {
+        String queryLockStatement = "SELECT name, email, phone FROM user WHERE name = ? AND password = MD5(?)";
+        try (PreparedStatement preparedStatement = this.connection.prepareStatement(queryLockStatement)) {
+            preparedStatement.setString(1, name);
+            preparedStatement.setString(2, password);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
+                String userName = resultSet.getString("name");
+                String email = resultSet.getString("email");
+                String phone = resultSet.getString("phone");
+                return new User(userName, phone, email, null);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return null;
     }
 
     public void closeConnection() {

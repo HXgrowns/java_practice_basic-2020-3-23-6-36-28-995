@@ -5,8 +5,6 @@ public class User {
     private String phoneNumber;
     private String email;
     private String password;
-    private int count;
-    private int lockStatement;
 
     public User(String name, String phoneNumber, String email, String password) {
         this.name = name;
@@ -29,13 +27,5 @@ public class User {
 
     public String getPassword() {
         return password;
-    }
-
-    public int getLockStatement() {
-        return lockStatement;
-    }
-
-    public int getCount() {
-        return count;
     }
 }
